@@ -18,12 +18,13 @@ NextGenotyperMS can process fastq files or bams (ideally aligned with bwa) of pa
 
 Briefly, each pair of fastq files goes through a round of QC using [fastqc (version 0.11.9)](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/) and is then aligned using [bwa mem (version 0.7.17-r1188)](http://bio-bwa.sourceforge.net/). The generated bam or input bam is then *MarkDuplicated* (without duplicate removal) using [GATK (version 4.1.9.0)](https://github.com/broadinstitute/gatk/releases/tag/4.1.9.0) before genotypes are extracted by NextGenotyperMS using reads which position includes a given microsatellite listed in a given fasta reference sequence.
 
+![Alt text](img/summary.png?raw=true "Microsatellite distribution")
+
 # Requirements
 NextGenotyperMS is distributed as a standalone [singularity](https://github.com/hpcng/singularity/releases) image so only singularity is required. It was tested on singularity version [3.6.1](https://github.com/hpcng/singularity/releases/tag/v3.6.1) but should be compatible with the higher versions of singularity as well.
 
 NextGenotyperMS can run on a single machine and process all input data (fastq files or bams) or in a calculation cluster.
 The minimum recommended RAM for the machine(s), independently of the analysis mode, is 8GB of RAM.
-
 
 # Usage
 ```
