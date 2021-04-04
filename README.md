@@ -14,8 +14,10 @@ NextGenotyperMS is a tool written in python3 allowing to easily extract microsat
 
 NextGenotyperMS can process fastq files or bams (ideally aligned with bwa) of paired samples and produce a high quality figure summarizing the distribution of the selected microsatellites. 
 
+![Alt text](img/summary.png?raw=true "Microsatellite distribution")
+
 # Requirements
-NextGenotyperMS is distributed as a standalone singularity image so only singularity is required. It was tested on singularity version 3.6.1 but should be compatible with the higher versions of singularity as well.
+NextGenotyperMS is distributed as a standalone [singularity](https://github.com/hpcng/singularity/releases) image so only singularity is required. It was tested on singularity version [3.6.1](https://github.com/hpcng/singularity/releases/tag/v3.6.1) but should be compatible with the higher versions of singularity as well.
 
 # Usage
 ```
