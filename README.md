@@ -3,6 +3,10 @@
 * [Requirements](#requirements)
 * [Usage](#usage)
 * [Examples](#examples)
+   * [Single machine mode](#single-machine-mode)
+   * [Calculation cluster](#calculation-cluster)
+      * [Parallelizable steps](#parallelizable-steps)
+      * [Summary step](#summary-step)
 * [Output files](#output-files)
 * [Limitations](#limitations)
 * [Contact](#contact)
@@ -12,13 +16,12 @@
 # Description
 NextGenotyperMS is a tool written in python3 allowing to easily extract microsatellite genotypes from Next Generation Illumina reads. It has been developped in order to be able to easily compare sequencing results of microsatellites produced using a classical PCR approach against low temperature isothermal amplification using recombinase polymerase amplification (LT-RPA) ([Daunay et al. 2019](https://academic.oup.com/nar/article/47/21/e141/5570702])).
 
-NextGenotyperMS can process fastq files or bams (ideally aligned with bwa) of paired (PCR/RPA) samples and produce a high quality figure summarizing the distribution of the selected microsatellites. 
+NextGenotyperMS can process fastq files or bams (ideally aligned with bwa) of paired (PCR/RPA) samples and produce a high quality figure summarizing the distribution of the selected microsatellites. It is available as a standalone [here](https://drive.google.com/file/d/1rjVB0wbvaU-8ffCmjoUcTp9H_lbRvwn8/view?usp=sharing). 
 
 ![Alt text](img/summary.png?raw=true "Microsatellite distribution")
 
-Briefly, each pair of fastq files goes through a round of QC using [fastqc (version 0.11.9)](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/) and is then aligned using [bwa mem (version 0.7.17-r1188)](http://bio-bwa.sourceforge.net/). The generated bam or input bam is then *MarkDuplicated* (without duplicate removal) using [GATK (version 4.1.9.0)](https://github.com/broadinstitute/gatk/releases/tag/4.1.9.0) before genotypes are extracted by NextGenotyperMS using reads which position includes a given microsatellite listed in a given fasta reference sequence.
+Briefly, each pair of fastq files goes through a round of QC using [fastqc (version 0.11.9)](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/) and is then aligned using [bwa mem (version 0.7.15)](http://bio-bwa.sourceforge.net/). The generated bam or input bam is then *MarkDuplicated* (without duplicate removal) using [GATK (version 4.1.9.0)](https://github.com/broadinstitute/gatk/releases/tag/4.1.9.0) before genotypes are extracted by NextGenotyperMS using reads which position includes a given microsatellite listed in the given fasta reference sequence.
 
-![Alt text](img/summary.png?raw=true "Microsatellite distribution")
 
 # Requirements
 NextGenotyperMS is distributed as a standalone [singularity](https://github.com/hpcng/singularity/releases) image so only singularity is required. It was tested on singularity version [3.6.1](https://github.com/hpcng/singularity/releases/tag/v3.6.1) but should be compatible with the higher versions of singularity as well.
@@ -28,7 +31,7 @@ The minimum recommended RAM for the machine(s), independently of the analysis mo
 
 # Usage
 ```
-singularity run  NextGenotyperMS.py -h
+singularity run /my/path/NextGenotyperMS_0.1.sif NextGenotyperMS.py -h
 Usage: NextGenotyperMS.py [options]
 
 Options:
@@ -74,6 +77,12 @@ Options:
   --figSize=FIGSIZE     comma separated value to set the width and height in
                         inches of the distribution figure. This is calculated
                         automatically by default
+  --fileList=FILELIST   comma separated list of files to process. Only
+                        relevant with option "-P local" : path to bam file or
+                        coma-separated path to fastq files. If not specified,
+                        the fastq files (*_R{N}_*.fastq.gz or *.R{N}.*fastq.gz
+                        with N in [1, 2]) or bam file will be deduced from the
+                        folder given as parameter "-d"
   -i IDVDTOPROCESSLIST, --idvdToProcessList=IDVDTOPROCESSLIST
                         comma-separated list of individuals to process. Set
                         only if you want to process only specific individuals
@@ -161,41 +170,69 @@ Options:
 # Examples
 ## Single machine mode
 As mentioned in the [usage](#usage) section, the parameter *-n* should be set to the square root of the total number of cores of your machine rounded down to the nearest integer. **Caution** : if you are not sure, leave it to 1 and **do not overestimate** that number as your machine will freeze if that number is too high
-```IMAGE=NextGenotyperMS.sif
+```IMAGE=/my/path/NextGenotyperMS_0.1.sif
 TMP_DIR=/tmp
+SAMPLE_FILE=/usr/local/code3/curie/testNextGenotyperMS/testSet1/Samples.txt
 TARGET_DIR=/my/target/
-NB_CPUS=4 # in this example, my machine has 16 cores 
-REF_FILE=/usr/local/NextGenotyperMS/code3/curie/testNextGenotyperMS/Sequence_MS_AmpSeq2.fa
-LOG_FILE=/my/log.txt
+NB_CPUS=4 # in this example, the machine has 16 cores 
+REF_FILE=/usr/local/code3/curie/testNextGenotyperMS/Sequence_MS_AmpSeq2.fa
+LOG_FILE=/my/path/log.txt
+SINGULARITY_OPTIONS= #eg partition mounting
 
-singularity run $IMAGE nextGenotyper.py -d /usr/local/NextGenotyperMS/code3/curie/testNextGenotyperMS/testSet1/ -r $REF_FILE -T $TMP_DIR -t $TARGET_DIR -n $NB_CPUS -s /usr/local/NextGenotyperMS/code3/curie/testNextGenotyperMS/testSet1/Samples.txt -U 1 > $LOG_FILE
+# process all 
+singularity run [$SINGULARITY_OPTIONS] $IMAGE NextGenotyperMS.py -d /usr/local/NextGenotyperMS/code3/curie/testNextGenotyperMS/testSet1/ -r $REF_FILE -T $TMP_DIR -t $TARGET_DIR -n $NB_CPUS -s $SAMPLE_FILE -U 1 > $LOG_FILE
 
-singularity run $IMAGE nextGenotyper.py -d /usr/local/NextGenotyperMS/code3/curie/testNextGenotyperMS/testSet1/ -r $REF_FILE -T $TMP_DIR -t $TARGET_DIR -n $NB_CPUS -s /usr/local/NextGenotyperMS/code3/curie/testNextGenotyperMS/testSet1/Samples.txt -S MNRMS_HT17_145pb_T,MNRMS_NR24_128pb_T,MNRMS_CAT25_149pb_T,DNRMS_D2S123_227pb_CAxTA1CAy,QNRMS_REN_264pb_TCTG,QNRMS_HPRTII_304pb_TCTA -U 1 -F $TARGET_DIR/customSummary.png --idvdToProcessList I2 --colorList green,yellow > $LOG_FILE
+# same as above but plot only the microsatellites "MNRMS_HT17_145pb_T,MNRMS_NR24_128pb_T,MNRMS_CAT25_149pb_T,DNRMS_D2S123_227pb_CAxTA1CAy,QNRMS_REN_264pb_TCTG,QNRMS_HPRTII_304pb_TCTA" for individual I2 and create a summay file $TARGET_DIR/customSummary.png with the PCR and RPA samples in respectively green and yellow.
+singularity run $IMAGE [$SINGULARITY_OPTIONS] NextGenotyperMS.py -d /usr/local/NextGenotyperMS/code3/curie/testNextGenotyperMS/testSet1/ -r $REF_FILE -T $TMP_DIR -t $TARGET_DIR -n $NB_CPUS -s $SAMPLE_FILE -S MNRMS_HT17_145pb_T,MNRMS_NR24_128pb_T,MNRMS_CAT25_149pb_T,DNRMS_D2S123_227pb_CAxTA1CAy,QNRMS_REN_264pb_TCTG,QNRMS_HPRTII_304pb_TCTA -U 1 -F $TARGET_DIR/customSummary.png --idvdToProcessList I2 --colorList green,yellow > $LOG_FILE
 ```
 
 ## Calculation cluster
-### parallelizable steps
-```IMAGE=NextGenotyperMS.sif
-TMP_DIR=/tmp
-TARGET_DIR=/my/target/
-NB_CPUS=4 # the number of available cores on the machine
-REF_FILE=/usr/local/NextGenotyperMS/code3/curie/testNextGenotyperMS/Sequence_MS_AmpSeq2.fa
-LOG_FILE=/my/log.txt
+### Parallelizable steps
+All your input files (bams or fastqs) should be within one single parent folder (they can be in subfolders). One process should be run for each input data set (bam or paired fastqs) as follows :
 
-singularity run $IMAGE nextGenotyper.py -d /usr/local/NextGenotyperMS/code3/curie/testNextGenotyperMS/testSet1/ -r $REF_FILE -T $TMP_DIR -t $TARGET_DIR -n $NB_CPUS -s /usr/local/NextGenotyperMS/code3/curie/testNextGenotyperMS/testSet1/Samples.txt -U 1 > $LOG_FILE
+```IMAGE=/my/path/NextGenotyperMS_0.1.sif
+TMP_DIR=/tmp
+SAMPLE_FILE=/usr/local/code3/curie/testNextGenotyperMS/testSet1/Samples.txt
+TARGET_DIR=/my/target/
+TARGET_DIR_FASTQ=/my/target/fastqs
+TARGET_DIR_BAM=/my/target/bams
+NB_CPUS=4 # the number of available cores on the machine
+REF_FILE=/usr/local/code3/curie/testNextGenotyperMS/Sequence_MS_AmpSeq2.fa
+LOG_FILE=/my/path/log.txt
+SINGULARITY_OPTIONS= #eg partition mounting
+
+# using fastqs
+## fastq pair for sample S3
+singularity run [$SINGULARITY_OPTIONS] $IMAGE NextGenotyperMS.py -P local --fileList /usr/local/code3/curie/testNextGenotyperMS/oneIdvd/fastqs/S3_S3_L001_R1_001.fastq.gz,/usr/local/code3/curie/testNextGenotyperMS/oneIdvd/fastqs/S3_S3_L001_R2_001.fastq.gz -r $REF_FILE -T $TMP_DIR -t $TARGET_DIR_FASTQ/ -n $NB_CPUS -s $SAMPLE_FILE
+## fastq pair for sample S8
+singularity run [$SINGULARITY_OPTIONS] $IMAGE NextGenotyperMS.py -P local --fileList /usr/local/code3/curie/testNextGenotyperMS/oneIdvd/fastqs/S8_S8_L001_R1_001.fastq.gz,/usr/local/code3/curie/testNextGenotyperMS/oneIdvd/fastqs/S8_S8_L001_R2_001.fastq.gz -r $REF_FILE -T $TMP_DIR -t $TARGET_DIR_FASTQ -n $NB_CPUS -s $SAMPLE_FILE
+
+
+# using bams
+## bam for sample S3
+singularity run [$SINGULARITY_OPTIONS] $IMAGE NextGenotyperMS.py -P local --fileList /usr/local/code3/curie/testNextGenotyperMS/oneIdvd/bams/S3.bam -r $REF_FILE -T $TMP_DIR -t $TARGET_DIR_BAM -s $SAMPLE_FILE
+## bam for sample S8
+singularity run [$SINGULARITY_OPTIONS] $IMAGE NextGenotyperMS.py -P local --fileList /usr/local/code3/curie/testNextGenotyperMS/oneIdvd/bams/S8.bam -r $REF_FILE -T $TMP_DIR -t $TARGET_DIR_BAM -s $SAMPLE_FILE
 ```
 
 
-### summary step
-Once all the parallelizable steps are finished, a final step is necessary to combine all the individual results.
-```IMAGE=NextGenotyperMS.sif
+### Summary step
+Once all the parallelizable steps are finished, a final step is necessary to combine all the individual results. It is important to set the target dir parameter (option *-t* to exactly the same value which was used in the previous parallelizable steps)
+```IMAGE=/my/path/NextGenotyperMS_0.1.sif
 TMP_DIR=/tmp
+SAMPLE_FILE=/usr/local/code3/curie/testNextGenotyperMS/testSet1/Samples.txt
 TARGET_DIR=/my/target/
-NB_CPUS=4 # the number of available cores on the machine
-REF_FILE=/usr/local/NextGenotyperMS/code3/curie/testNextGenotyperMS/Sequence_MS_AmpSeq2.fa
-LOG_FILE=/my/log.txt
+TARGET_DIR_FASTQ=/my/target/fastqs
+TARGET_DIR_BAM=/my/target/bams
+REF_FILE=/usr/local/code3/curie/testNextGenotyperMS/Sequence_MS_AmpSeq2.fa
+LOG_FILE=/my/path/log.txt
+SINGULARITY_OPTIONS= #eg partition mounting
 
-singularity run $IMAGE nextGenotyper.py -d /usr/local/NextGenotyperMS/code3/curie/testNextGenotyperMS/testSet1/ -r $REF_FILE -T $TMP_DIR -t $TARGET_DIR -s /usr/local/NextGenotyperMS/code3/curie/testNextGenotyperMS/testSet1/Samples.txt -U 1 > $LOG_FILE
+# using fastqs
+singularity run [$SINGULARITY_OPTIONS] $IMAGE NextGenotyperMS.py -d /usr/local/code3/curie/testNextGenotyperMS/oneIdvd/fastqs/ -r $REF_FILE -T $TMP_DIR -t $TARGET_DIR_FASTQ -s $SAMPLE_FILE -U 1 > $LOG_FILE
+
+# using bams
+singularity run [$SINGULARITY_OPTIONS] $IMAGE NextGenotyperMS.py -d /usr/local/code3/curie/testNextGenotyperMS/oneIdvd/bams/ -r $REF_FILE -T $TMP_DIR -t $TARGET_DIR_BAM -s $SAMPLE_FILE -U 1 > $LOG_FILE
 ```
 
 
@@ -215,9 +252,9 @@ All result files are stored in the folder given to the parameter *-p*. If not sp
 # Limitations
 * NextGenotyperMS will only work on microsatellites which size is < the sequencing read size.
 * As described in the [usage](#usage) section, only microsatellites with the following patterns are handled:
-** single repeated patterns like "A", "TCTG"
-** two repeated patterns *P* and *Q* indicated as *PxQy* ie *P* and *Q* are respectively repeated *x* and *y* times
-** microsatellites with sequence patterns *PxQ1Ry* ie *P*, *Q* and *R* are respectively repeated *x*, 1 and *y* times
+   * single repeated patterns like "A", "TCTG"
+   * two repeated patterns *P* and *Q* indicated as *PxQy* ie *P* and *Q* are respectively repeated *x* and *y* times
+   * microsatellites with sequence patterns *PxQ1Ry* ie *P*, *Q* and *R* are respectively repeated *x*, 1 and *y* times
 
 # Contact
 Victor RENAULT (victor.renault[AT]curie.fr)
