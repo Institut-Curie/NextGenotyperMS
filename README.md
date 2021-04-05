@@ -171,7 +171,7 @@ Options:
 
 # Examples
 
-Here is an an example of ![sample file](examples/Samples.txt) and ![reference sequence file](examples/Sequence_MS_AmpSeq2.fa). You can find more details on the expected of each file in the [usage](#usage) section above (see respectively options *-s* and *-r*)
+Here is an an example of [sample file](examples/Samples.txt) and [reference sequence file](examples/Sequence_MS_AmpSeq2.fa). You can find more details on the expected of each file in the [usage](#usage) section above (see respectively options *-s* and *-r*)
 
 ## Single machine mode
 As mentioned in the [usage](#usage) section, the parameter *-n* should be set to the square root of the total number of cores of your machine rounded down to the nearest integer. **Caution** : if you are not sure, leave it to 1 and **do not overestimate** that number as your machine will freeze if that number is too high
