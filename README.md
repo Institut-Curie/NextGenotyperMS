@@ -17,7 +17,7 @@
 # Description
 NextGenotyperMS is a tool written in python3 allowing to easily extract microsatellite genotypes from Next Generation Illumina reads. It has been developped in order to be able to easily compare sequencing results of microsatellites produced using a classical PCR approach against low temperature isothermal amplification using recombinase polymerase amplification (LT-RPA) ([Daunay et al. 2019](https://academic.oup.com/nar/article/47/21/e141/5570702])).
 
-NextGenotyperMS can process fastq files or bams (ideally aligned with bwa) of paired (PCR/RPA) samples and produce a high quality figure summarizing the distribution of the selected microsatellites. It is available as a standalone [here](https://drive.google.com/file/d/1rjVB0wbvaU-8ffCmjoUcTp9H_lbRvwn8/view?usp=sharing). 
+NextGenotyperMS is available as a [standalone singularity image](https://drive.google.com/file/d/1rjVB0wbvaU-8ffCmjoUcTp9H_lbRvwn8/view?usp=sharing) and can process fastq files or bams (ideally aligned with bwa) of paired (PCR/RPA) samples and produce a high quality figure summarizing the distribution of the selected microsatellites (PCR samples are in red while LT-RPA samples in blue in the figure below).
 
 ![Alt text](examples/summary.png?raw=true "Microsatellite distribution")
 
@@ -28,7 +28,7 @@ Briefly, each pair of fastq files goes through a round of QC using [fastqc (vers
 NextGenotyperMS is distributed as a standalone [singularity](https://github.com/hpcng/singularity/releases) image so only singularity is required. It was tested on singularity version [3.6.1](https://github.com/hpcng/singularity/releases/tag/v3.6.1) but should be compatible with the higher versions of singularity as well.
 
 NextGenotyperMS can run on a single machine and process all input data (fastq files or bams) or in a calculation cluster.
-The minimum recommended RAM for the machine(s), independently of the analysis mode, is 8GB of RAM. Ideally, the machine should have at least 4GB per core of RAM. If you have less, consider *n*, the total number of cores to be the total RAM / 4.
+The minimum recommended RAM for the machine(s), independently of the analysis mode, is 8GB of RAM. Ideally, the machine should have at least 4GB per core of RAM. If you have less, consider *N*, the total number of cores to be the total RAM / 4. On a single machine, set the parameter *-n* to the square root of the previous number *N*. On a calculation cluster, you can set *-n* to *N*.
 
 # Usage
 ```
@@ -171,7 +171,7 @@ Options:
 
 # Examples
 
-Here is an an example of [sample file](examples/Samples.txt) and [reference sequence file](examples/Sequence_MS_AmpSeq2.fa). You can find more details on the expected of each file in the [usage](#usage) section above (see respectively options *-s* and *-r*)
+Here is an an example of [sample file](examples/Samples.txt) and [reference sequence file](examples/Sequence_MS_AmpSeq2.fa). You can find more details on the expected file format of each file in the [usage](#usage) section above (see respectively options *-s* and *-r*)
 
 ## Single machine mode
 As mentioned in the [usage](#usage) section, the parameter *-n* should be set to the square root of the total number of cores of your machine rounded down to the nearest integer. **Caution** : if you are not sure, leave it to 1 and **do not overestimate** that number as your machine will freeze if that number is too high
