@@ -7,6 +7,7 @@
    * [Calculation cluster](#calculation-cluster)
       * [Parallelizable steps](#parallelizable-steps)
       * [Summary step](#summary-step)
+* [Unit tests](#unit-tests)
 * [Output files](#output-files)
 * [Limitations](#limitations)
 * [Contact](#contact)
@@ -63,7 +64,8 @@ Options:
                         the output file for the microsatellite distribution
                         across all individuals. By default, the file will be
                         created in "TARGET_DIR/plots/summary.tif" where
-                        TARGET_DIR is given by parameter "-t"
+                        TARGET_DIR is given by parameter "-t". Supported
+                        figure output formats are jpg/png/tif/eps/svg/pdf.
   --fastQcImageHeight=FASTQCIMAGEHEIGHT
                         Only relevant if your input data is fastq files. In
                         that case, this will set the height in pixels of
@@ -233,6 +235,23 @@ singularity run [$SINGULARITY_OPTIONS] $IMAGE NextGenotyperMS.py -d /usr/local/c
 
 # using bams
 singularity run [$SINGULARITY_OPTIONS] $IMAGE NextGenotyperMS.py -d /usr/local/code3/curie/testNextGenotyperMS/oneIdvd/bams/ -r $REF_FILE -T $TMP_DIR -t $TARGET_DIR_BAM -s $SAMPLE_FILE -U 1 > $LOG_FILE
+```
+
+# Unit tests
+In order to check whether eveything is ok with NextGenotyperMS on your system, you can run the unit tests as follows:
+```IMAGE=/my/path/NextGenotyperMS_0.1.sif
+NB_CPUS=4 # in this example, the machine has 16 cores 
+SINGULARITY_OPTIONS= #eg partition mounting
+
+singularity run $SINGULARITY_OPTIONS $IMAGE NextGenotyperMS.py -P test -n $NB_CPUS
+```
+
+You should get at the end of this command the following output:
+```
+----------------------------------------------------------------------
+Ran 13 tests in 273.024s
+
+OK
 ```
 
 
