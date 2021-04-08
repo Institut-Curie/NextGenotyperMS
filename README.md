@@ -261,7 +261,7 @@ OK
 # Output files
 All result files are stored in the folder given to the parameter *-p*. If not specified, the default output folder is *TARGET_DIR/plots* where *TARGET_DIR* is given by parameter *-t*.
 
-* one image in png format, which will be named *SEQNAME_INDIVIDUAL.png*, is created for each pair of individual and microsatellite showing the distribution of that microsatellite for the individual. A tab-delimited file with a *.txt* extension is also created with the same information.
+* one image in png format, which will be named *SEQNAME_INDIVIDUAL.png*, is created for each pair of individual and microsatellite showing the distribution of that microsatellite for the individual. A tab-delimited file with a *.txt* extension is also created with the same information and another tab-delimited file with the extension *_rawCount.txt* contains the raw counts of reads supporting each genotype.
 
 * one figure combining the previous microsatellite distributions for all individuals is produced (the default name is ```summary.tif```). A tab-delimited file named by default ```summary_key.txt``` is also created with the correspondence between the microsatellite length shown in the figure and the related microsatellite sequence pattern.
 
