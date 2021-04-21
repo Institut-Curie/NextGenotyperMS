@@ -188,7 +188,7 @@ SINGULARITY_OPTIONS= #eg partition mounting
 singularity run [$SINGULARITY_OPTIONS] $IMAGE NextGenotyperMS.py -d /usr/local/NextGenotyperMS/code3/curie/testNextGenotyperMS/testSet1/ -r $REF_FILE -T $TMP_DIR -t $TARGET_DIR -n $NB_CPUS -s $SAMPLE_FILE -U 1 > $LOG_FILE
 
 # same as above but plot only the microsatellites "MNRMS_HT17_145pb_T,MNRMS_NR24_128pb_T,MNRMS_CAT25_149pb_T,DNRMS_D2S123_227pb_CAxTA1CAy,QNRMS_REN_264pb_TCTG,QNRMS_HPRTII_304pb_TCTA" for individual I2 and create a summay file $TARGET_DIR/customSummary.png with the PCR and RPA samples in respectively green and yellow.
-singularity run $IMAGE [$SINGULARITY_OPTIONS] NextGenotyperMS.py -d /usr/local/NextGenotyperMS/code3/curie/testNextGenotyperMS/testSet1/ -r $REF_FILE -T $TMP_DIR -t $TARGET_DIR -n $NB_CPUS -s $SAMPLE_FILE -S MNRMS_HT17_145pb_T,MNRMS_NR24_128pb_T,MNRMS_CAT25_149pb_T,DNRMS_D2S123_227pb_CAxTA1CAy,QNRMS_REN_264pb_TCTG,QNRMS_HPRTII_304pb_TCTA -U 1 -F $TARGET_DIR/customSummary.png --idvdToProcessList I2 --colorList green,yellow > $LOG_FILE
+singularity run [$SINGULARITY_OPTIONS] $IMAGE NextGenotyperMS.py -d /usr/local/NextGenotyperMS/code3/curie/testNextGenotyperMS/testSet1/ -r $REF_FILE -T $TMP_DIR -t $TARGET_DIR -n $NB_CPUS -s $SAMPLE_FILE -S MNRMS_HT17_145pb_T,MNRMS_NR24_128pb_T,MNRMS_CAT25_149pb_T,DNRMS_D2S123_227pb_CAxTA1CAy,QNRMS_REN_264pb_TCTG,QNRMS_HPRTII_304pb_TCTA -U 1 -F $TARGET_DIR/customSummary.png --idvdToProcessList I2 --colorList green,yellow > $LOG_FILE
 ```
 
 ## Calculation cluster
