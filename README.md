@@ -17,7 +17,7 @@
 # Description
 NextGenotyperMS is a tool written in python3 allowing to easily extract microsatellite genotypes from Next Generation Illumina reads. It has been developped in order to be able to easily compare sequencing results of microsatellites produced using a classical PCR approach against low temperature isothermal amplification using recombinase polymerase amplification (LT-RPA) ([Daunay et al. 2019](https://academic.oup.com/nar/article/47/21/e141/5570702])).
 
-NextGenotyperMS is available as a [standalone singularity image](https://drive.google.com/file/d/15QonvWA6lKHih-Tdgn1OhdaR2LSk-FI8/view?usp=sharing) and can process fastq files or bams (ideally aligned with bwa) of paired (PCR/RPA) samples and produce a high quality figure summarizing the distribution of the selected microsatellites (PCR samples are in red while LT-RPA samples in blue in the figure below).
+NextGenotyperMS is available as a [standalone singularity image](https://drive.google.com/file/d/18LiOJU4xE7D_fuMtihi3ph5F4RpQbYHF/view?usp=sharing) and can process fastq files or bams (ideally aligned with bwa) of paired (PCR/RPA) samples and produce a high quality figure summarizing the distribution of the selected microsatellites (PCR samples are in red while LT-RPA samples in blue in the figure below).
 
 ![Alt text](examples/summary.png?raw=true "Microsatellite distribution")
 
